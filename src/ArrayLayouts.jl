@@ -46,7 +46,7 @@ else
     import Base: require_one_based_indexing    
 end     
 
-export materialize, materialize!, MulAdd, muladd!, Ldiv, Lmul, Rmul, lmul, rmul, mul, MemoryLayout, AbstractStridedLayout,
+export materialize, materialize!, MulAdd, muladd!, Ldiv, Rdiv, Lmul, Rmul, lmul, rmul, mul, MemoryLayout, AbstractStridedLayout,
         DenseColumnMajor, ColumnMajor, ZerosLayout, FillLayout, AbstractColumnMajor, RowMajor, AbstractRowMajor,
         DiagonalLayout, ScalarLayout, SymTridiagonalLayout, HermitianLayout, SymmetricLayout, TriangularLayout, 
         UnknownLayout, AbstractBandedLayout, ApplyBroadcastStyle, ConjLayout, AbstractFillLayout,
@@ -66,7 +66,8 @@ include("diagonal.jl")
 include("triangular.jl")
 include("factorizations.jl")
 
-@inline sub_materialize(_, V) = Array(V)
+@inline sub_materialize(_, V, _) = Array(V)
+@inline sub_materialize(L, V) = sub_materialize(L, V, axes(V))
 @inline sub_materialize(V::SubArray) = sub_materialize(MemoryLayout(typeof(V)), V)
 
 @inline lazy_getindex(A, I...) = sub_materialize(view(A, I...))
